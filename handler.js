@@ -52,35 +52,35 @@ fetch("woorden.json")
         }
     });
 
-
-$(document).ready(function () {
-    const $woorden = $('.woorden');
-    let isMoving = false;
-    let offsetX = 0;
-    let offsetY = 0;
-
-    $woorden.css('position', 'absolute');
-
-    $woorden.on('mousedown', function (e) {
-        isMoving = true;
-        offsetX = e.clientX - $woorden.offset().left;
-        offsetY = e.clientY - $woorden.offset().top;
-        $(document).on('mousemove', onMouseMove);
-        $(document).on('mouseup', onMouseUp);
-    });
-
-    function onMouseMove(e) {
-        if (isMoving) {
-            $woorden.css({
-                left: (e.clientX - offsetX) + 'px',
-                top: (e.clientY - offsetY) + 'px'
-            });
-        }
-    }
-
-    function onMouseUp() {
-        isMoving = false;
-        $(document).off('mousemove', onMouseMove);
-        $(document).off('mouseup', onMouseUp);
-    }
-});
+//
+//$(document).ready(function () {
+//    const $woorden = $('.woorden');
+//    let isMoving = false;
+//    let offsetX = 0;
+//    let offsetY = 0;
+//
+//    $woorden.css('position', 'absolute');
+//
+//    $woorden.on('mousedown', function (e) {
+//        isMoving = true;
+//        offsetX = e.clientX - $woorden.offset().left;
+//        offsetY = e.clientY - $woorden.offset().top;
+//        $(document).on('mousemove', onMouseMove);
+//        $(document).on('mouseup', onMouseUp);
+//    });
+//
+//    function onMouseMove(e) {
+//        if (isMoving) {
+//            $woorden.css({
+//                left: (e.clientX - offsetX) + 'px',
+//                top: (e.clientY - offsetY) + 'px'
+//            });
+//        }
+//    }
+//
+//    function onMouseUp() {
+//        isMoving = false;
+//        $(document).off('mousemove', onMouseMove);
+//        $(document).off('mouseup', onMouseUp);
+//    }
+//});
