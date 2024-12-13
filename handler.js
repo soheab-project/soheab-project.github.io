@@ -38,7 +38,7 @@ fetch("woorden.json")
 
             $(inp).on("input", function () {
                 let ID = this.getAttribute('data-name');
-                let input = $(this).val();
+                let input = $(this).val().toLowerCase();
                 let td = $(this).parent().next();
                 if (input === ID) {
                     td.css('background-color', 'green');
