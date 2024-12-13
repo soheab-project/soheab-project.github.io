@@ -46,8 +46,12 @@ fetch("woorden.json")
                     let updatedWordsList = wordsList.replace(new RegExp(`\\b${ID}\\b`, 'g'), `<s><geel>${ID}</geel></s>`);
                     $('.woorden p').html(updatedWordsList);
                 } else {
-                    td.css('background-color', 'red');
-                }
+                    if (!input) {
+                        td.css('background-color', '#FFF');
+                    else {
+                      td.css('background-color', 'red');
+                    };
+                };
             });
         }
     });
