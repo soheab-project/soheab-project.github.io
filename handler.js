@@ -48,6 +48,7 @@ fetch("woorden.json")
                 } else {
                     if (!input) {
                         td.css('background-color', '#FFF');
+                    }
                     else {
                       td.css('background-color', 'red');
                     };
