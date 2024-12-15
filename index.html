@@ -9,9 +9,24 @@
 </head>
 
 <body>
+    <p class="toets-kiezer">Toets: <select></select></p>
     <div class="woorden">
-        <p></p>
+        <button type="button" onclick="toggleVisibility()">Toggle Woorden</button>
+        <div id="woorden-content" style="display: block;">
+            <p></p>
+        </div>
     </div>
+
+    <script>
+        function toggleVisibility() {
+            var content = document.getElementById('woorden-content');
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+            } else {
+                content.style.display = 'none';
+            }
+        }
+    </script>
     <table>
         <thead>
             <tr>
@@ -23,10 +38,14 @@
         </tbody>
     </table>
 
+    <script type="text/typescript" src="handler.ts"></script>
+
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
-    <script src="handler.js"></script>
+
+    <script src=" https://cdn.jsdelivr.net/npm/typescript@4.9.5/lib/typescript.min.js "></script>
+    <script src="https://rawgit.com/basarat/typescript-script/master/transpiler.js"></script>
 </body>
 
 </html>
