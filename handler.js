@@ -1,16 +1,30 @@
-console.log('Hello from handler.ts');
-
-async function getWoorden(nummer: number): Promise<string[]> {
+/**
+ * Fetches words from a JSON file and returns the word at the specified index.
+ * @param {number} nummer - The index of the word to retrieve.
+ * @returns {Promise<string>} The word at the specified index.
+ */
+async function getWoorden(nummer) {
     const response = await fetch(`woorden.json`);
     const data = await response.json();
     return data[nummer];
 }
 
-function toCaseText(_string: string) {
+/**
+ * Converts a string to title case.
+ * @param {string} _string - The string to convert.
+ * @returns {string} The converted string.
+ */
+function toCaseText(_string) {
     return _string.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
-};
+}
 
-function toTitleCase(_string: string, _isFirst: boolean) {
+/**
+ * Converts a string to title case with an option to capitalize only the first letter.
+ * @param {string} _string - The string to convert.
+ * @param {boolean} _isFirst - Whether to capitalize only the first letter.
+ * @returns {string} The converted string.
+ */
+function toTitleCase(_string, _isFirst) {
     if (_isFirst) {
         return _string.charAt(0).toUpperCase() + _string.slice(1);
     } else {
@@ -18,9 +32,16 @@ function toTitleCase(_string: string, _isFirst: boolean) {
     }
 }
 
-function updateWoordsList(woord: string, hint: boolean = false, correct: boolean = false, reset: boolean = false) {
+/**
+ * Updates the list of words with the specified word and formatting options.
+ * @param {string} woord - The word to update.
+ * @param {boolean} [hint=false] - Whether to format the word as a hint.
+ * @param {boolean} [correct=false] - Whether to format the word as correct.
+ * @param {boolean} [reset=false] - Whether to reset the formatting of the word.
+ */
+function updateWoordsList(woord, hint = false, correct = false, reset = false) {
     let wordsList = $('.woorden p').html();
-    let replace_with: string;
+    let replace_with;
     if (hint) {
         replace_with = `<s><rood>${woord}</rood></s>`;
     } else if (correct) {
@@ -29,23 +50,28 @@ function updateWoordsList(woord: string, hint: boolean = false, correct: boolean
         replace_with = woord;
     } else {
         replace_with = woord;
-    };
-
+    }
 
     let updatedWordsList = wordsList.replace(new RegExp(`\\b${woord}\\b`, 'g'), replace_with);
     if (correct) {
         updatedWordsList = updatedWordsList.replace(new RegExp(`<s><rood>${woord}</rood></s>`, 'g'), replace_with);
     } else if (hint) {
         updatedWordsList = updatedWordsList.replace(new RegExp(`<s><groen>${woord}</groen></s>`, 'g'), replace_with);
-
     } else {
         updatedWordsList = updatedWordsList.replace(new RegExp(`<s><groen>${woord}</groen></s>`, 'g'), replace_with);
         updatedWordsList = updatedWordsList.replace(new RegExp(`<s><rood>${woord}</rood></s>`, 'g'), replace_with);
     }
     $('.woorden p').html(updatedWordsList);
-};
+}
 
-function markAs(_input: JQuery, correct: boolean = false, incorrect: boolean = false, reset: boolean = false) {
+/**
+ * Marks an input element with the specified formatting options.
+ * @param {JQuery} _input - The input element to mark.
+ * @param {boolean} [correct=false] - Whether to mark the input as correct.
+ * @param {boolean} [incorrect=false] - Whether to mark the input as incorrect.
+ * @param {boolean} [reset=false] - Whether to reset the formatting of the input.
+ */
+function markAs(_input, correct = false, incorrect = false, reset = false) {
     let parent = _input.parent();
     let td = parent.next();
     if (correct) {
@@ -59,18 +85,21 @@ function markAs(_input: JQuery, correct: boolean = false, incorrect: boolean = f
         parent.css('background-color', '');
         td.css('background-color', '');
     }
-};
+}
 
-function getHint(_hint: string) {
+/**
+ * Creates a hint icon element with the specified hint text.
+ * @param {string} _hint - The hint text to display.
+ * @returns {JQuery} The hint icon element.
+ */
+function getHint(_hint) {
     let icon = $(`<span class="icon" title="${_hint}" style="cursor: pointer;"></span>`);
     icon.attr("title", _hint);
     icon.css("display", "block");
     icon.text("Vergeten? Klik hier!");
     icon.on('click', function () {
-        console.log('clicked');
         let input = $(this).prev();
         let ID = input.attr('data-name');
-        console.log(input,);
         markAs(input, true, false, false);
 
         if (!ID) {
@@ -81,13 +110,17 @@ function getHint(_hint: string) {
         updateWoordsList(ID, true, false, false);
     });
     return icon;
-};
+}
 
-async function loadWoorden(nummer: number) {
+/**
+ * Loads words from a JSON file and displays them in a table.
+ * @param {number} nummer - The index of the words to load.
+ */
+async function loadWoorden(nummer) {
     $('tbody').html('');
     $('.woorden p').html('');
 
-    const woorden: string[] = await getWoorden(nummer);
+    const woorden = await getWoorden(nummer);
 
     let keys = Object.keys(woorden);
 
@@ -95,8 +128,8 @@ async function loadWoorden(nummer: number) {
     for (const key of keys) {
         let value = woorden[key];
         let shuffledWords = Array.from(new Set(keys)).sort(() => Math.random() - 0.5);
-        let rows: string[] = [];
-        let row: string[] = [];
+        let rows = [];
+        let row = [];
         for (let i = 0; i < shuffledWords.length; i++) {
             row.push(shuffledWords[i]);
             if (row.length === 6 || i === shuffledWords.length - 1) {
@@ -115,18 +148,16 @@ async function loadWoorden(nummer: number) {
         trow.append(`<td>${toTitleCase(value, true)}</td>`);
         trow.append(`</tr>`);
         $('tbody').append(trow);
-    };
+    }
 
     $("input").on("input", function () {
         let ID = this.getAttribute('data-name');
         let input = $(this).val();
         let td = $(this).parent().next();
 
-        console.log(ID, input);
         if (!ID) {
             return;
-        };
-
+        }
 
         if (td.prev().find('span.icon').length === 0) {
             td.prev().append(getHint(ID));
@@ -147,13 +178,14 @@ async function loadWoorden(nummer: number) {
             updateWoordsList(ID, false, false, true);
         }
     });
-};
+}
 
+/**
+ * Handles the selection of tests and loads the corresponding words.
+ */
 async function handleToetsen() {
     const toetsenKiezer = $('.toets-kiezer select');
-    const toetsen: number[] = Object.keys(await (await fetch('woorden.json')).json()).map(Number);
-    console.log(toetsenKiezer);
-    console.log(toetsen);
+    const toetsen = Object.keys(await (await fetch('woorden.json')).json()).map(Number);
 
     const selectedToets = localStorage.getItem('selectedToets');
 
@@ -173,14 +205,15 @@ async function handleToetsen() {
         localStorage.setItem('selectedToets', nummer.toString());
         loadWoorden(Number(nummer));
     });
-};
+}
 
+/**
+ * Initializes the application by handling test selection and loading words.
+ */
 jQuery(function () {
     handleToetsen();
     const selectedToets = localStorage.getItem('selectedToets');
-    console.log('selectedToets', selectedToets);
     loadWoorden(Number(selectedToets));
-
 });
 
 //
