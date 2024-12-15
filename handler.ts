@@ -88,7 +88,9 @@ async function loadWoorden(nummer: number) {
     $('.woorden p').html('');
 
     const woorden: string[] = await getWoorden(nummer);
+
     let keys = Object.keys(woorden);
+
     keys.sort(() => Math.random() - 0.5);
     for (const key of keys) {
         let value = woorden[key];
