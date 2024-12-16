@@ -216,6 +216,38 @@ jQuery(function () {
     loadWoorden(Number(selectedToets));
 });
 
+
+document.getElementById('toggle-button').addEventListener('click', function () {
+    var content = document.getElementById('woorden-content');
+    if (content.style.display === 'none') {
+        content.style.display = 'block';
+    } else {
+        content.style.display = 'none';
+    }
+});
+
+
+$("#scroll-button").attr("data-tooltip", 'Scroll naar boven/beneden');
+var scrollButton = document.getElementById('scroll-button');
+
+window.addEventListener('scroll', function () {
+    if (window.scrollY > window.innerHeight / 2) {
+        scrollButton.innerHTML = '&#9650;';
+        $('#scroll-button').attr("data-tooltip", 'Scroll naar boven');
+    } else {
+        scrollButton.innerHTML = '&#9660;';
+        $('#scroll-button').attr("data-tooltip", 'Scroll naar beneden');
+    }
+});
+
+scrollButton.addEventListener('click', function () {
+    if (window.scrollY > window.innerHeight / 2) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+});
+
 //
 //$(document).ready(function () {
 //    const $woorden = $('.woorden');

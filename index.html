@@ -1,50 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 
+</html>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nederlands Toets 4</title>
+    <title>Nederlands Toets Oefener</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <p class="toets-kiezer">Toets: <select></select></p>
-    <div class="woorden">
-        <button type="button" onclick="toggleVisibility()">Toggle Woorden</button>
-        <div id="woorden-content" style="display: block;">
-            <p></p>
-        </div>
-    </div>
+    <header>
+        <h1>Nederlands Toets Oefener</h1>
+        <p class="toets-kiezer"><b>Welke toets?</b><select>
+            </select></p>
+    </header>
+
+    <main>
+        <section class="woorden">
+            <button type="button" id="toggle-button">Toggle Woorden</button>
+            <div id="woorden-content">
+                <p></p>
+            </div>
+        </section>
+
+        <section>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Woord</th>
+                        <th>Betekenis</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </section>
+    </main>
 
     <script>
-        function toggleVisibility() {
+        document.getElementById('toggle-button').addEventListener('click', function () {
             var content = document.getElementById('woorden-content');
             if (content.style.display === 'none') {
                 content.style.display = 'block';
             } else {
                 content.style.display = 'none';
             }
-        }
+        });
     </script>
-    <table>
-        <thead>
-            <tr>
-                <th>Woord</th>
-                <th>Betekenis</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
-
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-
     <script type="text/javascript" src="handler.js"></script>
 
+    <footer>
+        <p>&copy; 2024 - Soheab Malik</p>
+    </footer>
 
+    <button id="scroll-button">&#9650;</button>
+
+
+    <script>
+        $("#scroll-button").attr("data-tooltip", 'Scroll naar boven/beneden');
+        var scrollButton = document.getElementById('scroll-button');
+
+        window.addEventListener('scroll', function () {
+            if (window.scrollY > window.innerHeight / 2) {
+                scrollButton.innerHTML = '&#9650;';
+                $('#scroll-button').attr("data-tooltip", 'Scroll naar boven');
+            } else {
+                scrollButton.innerHTML = '&#9660;';
+                $('#scroll-button').attr("data-tooltip", 'Scroll naar beneden');
+            }
+        });
+
+        scrollButton.addEventListener('click', function () {
+            if (window.scrollY > window.innerHeight / 2) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            }
+        });
+    </script>
 </body>
 
 </html>

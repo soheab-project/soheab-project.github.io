@@ -1,11 +1,16 @@
+:root {
+    --border-radius: 25px;
+    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
 body {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-family: 'Roboto', sans-serif;
     line-height: 1.6;
     margin: 10px;
     padding: 0;
-    background-color: #e9ecef;
     color: #343a40;
-    border-radius: 20px;
+    border-radius: 25px;
+    background-color: #b4b4b438;
 }
 
 h1,
@@ -22,50 +27,84 @@ table {
     width: 100%;
     border-collapse: collapse;
     margin: 20px 0;
-    border-radius: 25px;
+    border-radius: var(--border-radius);
     overflow: hidden;
-    color: black
+    color: #343a40;
+    box-shadow: var(--box-shadow);
+    margin: 20px auto;
 }
 
 table th,
 table td {
-    padding: 12px 15px;
+    padding: 15px 20px;
     border: 1px solid #ddd;
     text-align: left;
 }
 
 table th {
-    background-color: #f8f9fa;
-    color: #495057;
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
 }
 
 table tr:nth-child(even) {
-    background-color: #f2f2f2;
+    background-color: #f8f9fa;
 }
 
+table tr:hover {
+    background-color: #e9ecef;
+}
 
 input {
     padding: 10px;
-    border-radius: 20px;
+    border-radius: 25px;
     border: 1px solid #ccc;
     margin: 10px 0;
-    /* Adjust width to account for padding */
     box-sizing: border-box;
-    /* Ensure padding and border are included in the element's total width and height */
+    border-width: 5px;
+
+}
+
+input:focus {
+    border-color: #007bff;
+    outline: none;
 }
 
 .woorden {
-    padding: 25px 25px;
+    padding: 25px;
     background-color: #fff;
     border-radius: 25px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--box-shadow);
+    width: 100%;
+    margin: 10px 0;
+    width: 80%;
+    margin: 0 auto;
     text-align: center;
-    margin: 15px auto;
 }
 
 .woorden p {
-    font-size: 1.2em;
-    color: #333;
+    font-size: 20px;
+    color: #343a40;
+}
+
+.woorden button {
+    text-align: center;
+    padding: 10px 20px;
+    border-radius: 25px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+    display: block;
+    margin: 0 auto;
+}
+
+.woorden button:hover {
+    background-color: #0056b3;
 }
 
 groen {
@@ -78,7 +117,7 @@ rood {
 
 button {
     padding: 10px 20px;
-    border-radius: 20px;
+    border-radius: 25px;
     border: none;
     background-color: #007bff;
     color: white;
@@ -93,13 +132,42 @@ button:hover {
 
 select {
     padding: 10px;
-    border-radius: 20px;
+    border-radius: 25px;
     border: 1px solid #ccc;
     margin: 10px 0;
     width: calc(100% - 22px);
-    /* Adjust width to account for padding */
     box-sizing: border-box;
-    /* Ensure padding and border are included in the element's total width and height */
     background-color: white;
     color: #495057;
+    box-shadow: var(--box-shadow);
+}
+
+#scroll-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 24px;
+}
+
+#scroll-button:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 60px;
+    right: 0;
+    background-color: #333;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    white-space: nowrap;
+    font-size: 12px;
 }
