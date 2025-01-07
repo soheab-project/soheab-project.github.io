@@ -170,7 +170,7 @@ async function loadWoorden(nummer) {
             return;
         }
 
-        if (input.trim() === ID.trim()) {
+        if (input.trim().toLowerCase() === ID.trim().toLowerCase()) {
             markAs($(this), true, false, false);
             updateWoordsList(ID, false, true, false);
         } else {
