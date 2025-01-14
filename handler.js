@@ -7,7 +7,6 @@
 async function getWoorden(periode, nummer) {
     const response = await fetch(`woorden.json`);
     const data = await response.json();
-    console.log('getWoorden:', data, periode, nummer,);
     return data[periode][nummer];
 }
 
@@ -217,8 +216,6 @@ async function handlePeriode() {
         localStorage.setItem('selectedToets', 1);
         const selectedToets = localStorage.getItem('selectedToets');
 
-        console.log('selectedPeriode:', nummer);
-        console.log('selectedToets:', selectedToets);
         loadWoorden(nummer, selectedToets);
     });
 
@@ -232,13 +229,10 @@ async function handleToetsen(periode) {
     const toetsenKiezer = $('.toets-kiezer select');
     toetsenKiezer.empty();
     const toetsen = (await (await fetch('woorden.json')).json())[periode];
-    console.log('periode:', periode);
-    console.log('toetsen:', toetsen,);
 
     const selectedToets = localStorage.getItem('selectedToets');
 
     Object.keys(toetsen).forEach((toets) => {
-        console.log('toets:', toets,);
         let option = $(`<option value="${toets}">Toets ${toets}</option>`);
         if (selectedToets && selectedToets === toets) {
             option.attr('selected', 'selected');
@@ -253,7 +247,6 @@ async function handleToetsen(periode) {
         }
         selectedPeriode = localStorage.getItem('selectedPeriode');
         localStorage.setItem('selectedToets', nummer);
-        console.log('selectedToets:', nummer);
         loadWoorden(selectedPeriode, nummer);
     });
 }
@@ -270,7 +263,6 @@ jQuery(function () {
     if (!selectedToets) {
         localStorage.setItem('selectedToets', 1);
     };
-    console.log(`selectedPeriode: ${selectedPeriode}, selectedToets: ${selectedToets}`);
     handlePeriode();
     loadWoorden(selectedPeriode, selectedToets,);
 });
