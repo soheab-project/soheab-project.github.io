@@ -1,12 +1,14 @@
 /**
  * Fetches words from a JSON file and returns the word at the specified index.
- * @param {number} nummer - The index of the word to retrieve.
+ * @param {periode} periode - The period of the words to retrieve.
+ * @param {number} nummer - The index of the word to retrieve from the specified period.
  * @returns {Promise<string>} The word at the specified index.
  */
-async function getWoorden(nummer) {
+async function getWoorden(periode, nummer) {
     const response = await fetch(`woorden.json`);
     const data = await response.json();
-    return data[nummer];
+    console.log('getWoorden:', data, periode, nummer,);
+    return data[periode][nummer];
 }
 
 /**
@@ -40,7 +42,7 @@ function toTitleCase(_string, _isFirst) {
  * @param {boolean} [reset=false] - Whether to reset the formatting of the word.
  */
 function updateWoordsList(woord, hint = false, correct = false, reset = false) {
-    let wordsList = $('.woorden p').html();
+    let wordsList = $("#woorden-content").html();
     let replace_with;
     if (hint) {
         replace_with = `<s><rood>${woord}</rood></s>`;
@@ -61,7 +63,7 @@ function updateWoordsList(woord, hint = false, correct = false, reset = false) {
         updatedWordsList = updatedWordsList.replace(new RegExp(`<s><groen>${woord}</groen></s>`, 'g'), replace_with);
         updatedWordsList = updatedWordsList.replace(new RegExp(`<s><rood>${woord}</rood></s>`, 'g'), replace_with);
     }
-    $('.woorden p').html(updatedWordsList);
+    $("#woorden-content").html(updatedWordsList);
 }
 
 /**
@@ -74,16 +76,23 @@ function updateWoordsList(woord, hint = false, correct = false, reset = false) {
 function markAs(_input, correct = false, incorrect = false, reset = false) {
     let parent = _input.parent();
     let td = parent.next();
+
     if (correct) {
         parent.css('background-color', 'green');
         td.css('background-color', 'green');
         _input.next('.icon').remove();
+        td.css("color", "white");
+        td.prev().css("color", "white");
     } else if (incorrect) {
         parent.css('background-color', 'red');
         td.css('background-color', 'red');
+        td.css("color", "white");
+        td.prev().css("color", "white");
     } else if (reset) {
         parent.css('background-color', '');
         td.css('background-color', '');
+        td.css("color", "");
+        td.prev().css("color", "");
     }
 }
 
@@ -116,29 +125,18 @@ function getHint(_hint) {
  * Loads words from a JSON file and displays them in a table.
  * @param {number} nummer - The index of the words to load.
  */
-async function loadWoorden(nummer) {
+async function loadWoorden(periode, nummer) {
     $('tbody').html('');
-    $('.woorden p').html('');
+    $("#woorden-content").html('');
 
-    const woorden = await getWoorden(nummer);
+    const woorden = await getWoorden(periode, nummer);
 
     let keys = Object.keys(woorden);
-
     keys.sort(() => Math.random() - 0.5);
+    let rows = [];
     for (const key of keys) {
         let value = woorden[key];
-        let shuffledWords = Array.from(new Set(keys)).sort(() => Math.random() - 0.5);
-        let rows = [];
-        let row = [];
-        for (let i = 0; i < shuffledWords.length; i++) {
-            row.push(shuffledWords[i]);
-            if (row.length === 6 || i === shuffledWords.length - 1) {
-                rows.push(row.join(' - '));
-                row = [];
-            }
-        }
-        $('.woorden p').html(rows.join('<br>'));
-
+        rows.push(key);
         let trow = $(`<tr>`);
         let tdata = $(`<td>`);
         const _inp = $(`<input type="text" value="" data-name="${key}">`);
@@ -149,6 +147,17 @@ async function loadWoorden(nummer) {
         trow.append(`</tr>`);
         $('tbody').append(trow);
     }
+    let shuffledWords = Array.from(new Set(rows)).sort(() => Math.random() - 0.5);
+    let formattedRows = [];
+    let row = [];
+    for (let i = 0; i < shuffledWords.length; i++) {
+        row.push(shuffledWords[i]);
+        if (row.length === 7 || i === shuffledWords.length - 1) {
+            formattedRows.push(row.join(' &mdash; '));
+            row = [];
+        }
+    }
+    $('#woorden-content').html(formattedRows.map(r => `<p>${r}</p>`).join(''));
 
     $("input").on("input", function () {
         let ID = this.getAttribute('data-name');
@@ -178,20 +187,60 @@ async function loadWoorden(nummer) {
             updateWoordsList(ID, false, false, true);
         }
     });
+    const periodeKiezer = $('.periode-kiezer select');
+    const toetsenKiezer = $('.toets-kiezer select');
+
+    periodeKiezer.val(periode);
+    toetsenKiezer.val(nummer);
+}
+
+async function handlePeriode() {
+    const periodeKiezer = $('.periode-kiezer select');
+    const periodes = Object.keys(await (await fetch('woorden.json')).json());
+
+    const selectedPeriode = localStorage.getItem('selectedPeriode');
+
+    periodes.forEach((periode) => {
+        let option = $(`<option value="${periode}">Periode ${periode}</option>`);
+        if (selectedPeriode && selectedPeriode === periode) {
+            option.attr('selected', 'selected');
+        }
+        periodeKiezer.append(option);
+    });
+
+    periodeKiezer.on('change', function () {
+        let nummer = $(this).val();
+        if (!nummer) {
+            return;
+        }
+        localStorage.setItem('selectedPeriode', nummer);
+        localStorage.setItem('selectedToets', 1);
+        const selectedToets = localStorage.getItem('selectedToets');
+
+        console.log('selectedPeriode:', nummer);
+        console.log('selectedToets:', selectedToets);
+        loadWoorden(nummer, selectedToets);
+    });
+
+    handleToetsen(selectedPeriode);
 }
 
 /**
  * Handles the selection of tests and loads the corresponding words.
  */
-async function handleToetsen() {
+async function handleToetsen(periode) {
     const toetsenKiezer = $('.toets-kiezer select');
-    const toetsen = Object.keys(await (await fetch('woorden.json')).json()).map(Number);
+    toetsenKiezer.empty();
+    const toetsen = (await (await fetch('woorden.json')).json())[periode];
+    console.log('periode:', periode);
+    console.log('toetsen:', toetsen,);
 
     const selectedToets = localStorage.getItem('selectedToets');
 
-    toetsen.forEach((toets) => {
+    Object.keys(toetsen).forEach((toets) => {
+        console.log('toets:', toets,);
         let option = $(`<option value="${toets}">Toets ${toets}</option>`);
-        if (selectedToets && Number(selectedToets) === toets) {
+        if (selectedToets && selectedToets === toets) {
             option.attr('selected', 'selected');
         }
         toetsenKiezer.append(option);
@@ -202,8 +251,10 @@ async function handleToetsen() {
         if (!nummer) {
             return;
         }
-        localStorage.setItem('selectedToets', nummer.toString());
-        loadWoorden(Number(nummer));
+        selectedPeriode = localStorage.getItem('selectedPeriode');
+        localStorage.setItem('selectedToets', nummer);
+        console.log('selectedToets:', nummer);
+        loadWoorden(selectedPeriode, nummer);
     });
 }
 
@@ -211,41 +262,17 @@ async function handleToetsen() {
  * Initializes the application by handling test selection and loading words.
  */
 jQuery(function () {
-    handleToetsen();
+    const selectedPeriode = localStorage.getItem('selectedPeriode');
     const selectedToets = localStorage.getItem('selectedToets');
-    loadWoorden(Number(selectedToets));
-});
-
-
-document.getElementById('toggle-button').addEventListener('click', function () {
-    var content = document.getElementById('woorden-content');
-    if (content.style.display === 'none') {
-        content.style.display = 'block';
-    } else {
-        content.style.display = 'none';
-    }
-});
-
-
-$("#scroll-button").attr("data-tooltip", 'Scroll naar boven/beneden');
-var scrollButton = document.getElementById('scroll-button');
-
-window.addEventListener('scroll', function () {
-    if (window.scrollY > window.innerHeight / 2) {
-        scrollButton.innerHTML = '&#9650;';
-        $('#scroll-button').attr("data-tooltip", 'Scroll naar boven');
-    } else {
-        scrollButton.innerHTML = '&#9660;';
-        $('#scroll-button').attr("data-tooltip", 'Scroll naar beneden');
-    }
-});
-
-scrollButton.addEventListener('click', function () {
-    if (window.scrollY > window.innerHeight / 2) {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else {
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    }
+    if (!selectedPeriode) {
+        localStorage.setItem('selectedPeriode', 3);
+    };
+    if (!selectedToets) {
+        localStorage.setItem('selectedToets', 1);
+    };
+    console.log(`selectedPeriode: ${selectedPeriode}, selectedToets: ${selectedToets}`);
+    handlePeriode();
+    loadWoorden(selectedPeriode, selectedToets,);
 });
 
 //

@@ -13,17 +13,42 @@
 <body>
     <header>
         <h1>Nederlands Toets Oefener</h1>
-        <p class="toets-kiezer"><b>Welke toets?</b><select>
+        <p class="periode-kiezer"><b>Welke Periode?</b><br><select>
+            </select></p>
+        <p class="toets-kiezer"><b>Welke toets?</b><br><select>
             </select></p>
     </header>
 
     <main>
-        <section class="woorden">
-            <button type="button" id="toggle-button">Toggle Woorden</button>
-            <div id="woorden-content">
-                <p></p>
-            </div>
-        </section>
+        <div id="woorden-header">
+            <p>
+                <span id="woorden-arrow" style="font-size: 1em; vertical-align: middle;">&#9654;</span>
+                <b>Woordenlijst</b>
+            </p>
+        </div>
+        <div id="woorden-content"></div>
+        <p></p>
+        </div>
+
+        <script>
+            const woordenHeader = document.getElementById('woorden-header');
+            const woordenContent = document.getElementById('woorden-content');
+            const woordenArrow = document.getElementById('woorden-arrow');
+
+            function toggleWoordenContent() {
+                const isCollapsed = woordenContent.style.display === 'none';
+                woordenContent.style.display = isCollapsed ? 'block' : 'none';
+                woordenArrow.innerHTML = isCollapsed ? '&#9660;' : '&#9654;';
+                localStorage.setItem('woordenCollapsed', !isCollapsed);
+            }
+
+            woordenHeader.addEventListener('click', toggleWoordenContent);
+
+            // Check localStorage to set initial state
+            const isCollapsed = localStorage.getItem('woordenCollapsed') === 'true';
+            woordenContent.style.display = isCollapsed ? 'none' : 'block';
+            woordenArrow.innerHTML = isCollapsed ? '&#9654;' : '&#9660;';
+        </script>
 
         <section>
             <table>
@@ -39,23 +64,25 @@
         </section>
     </main>
 
-    <script>
-        document.getElementById('toggle-button').addEventListener('click', function () {
-            var content = document.getElementById('woorden-content');
-            if (content.style.display === 'none') {
-                content.style.display = 'block';
-            } else {
-                content.style.display = 'none';
-            }
-        });
-    </script>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="handler.js"></script>
 
     <footer>
-        <p>&copy; 2024 & Present - Soheab - <a href="https://github.com/soheab-project/soheab-project.github.io">Source</a></p>
+        </p>
+        <script>
+            const startYear = 2024;
+            const currentYear = new Date().getFullYear();
+            const yearsUntilNow = [];
+            for (let year = startYear; year <= currentYear; year++) {
+                yearsUntilNow.push(year.toString());
+            }
+            console.log("current years:", yearsUntilNow);
+            const yearsText = yearsUntilNow.join(" & ");
+
+            document.querySelector('footer p').innerHTML = `&copy; ${yearsText} - Soheab - <a href="https://github.com/soheab-project/soheab-project.github.io">Source</a>`;
+        </script>
     </footer>
 
     <button id="scroll-button">&#9650;</button>
