@@ -5,9 +5,14 @@
  * @returns {Promise<string>} The word at the specified index.
  */
 async function getWoorden(periode, nummer) {
-    const response = await fetch(`woorden.json`);
+    const response = await fetch(`../woordenschat.json`);
     const data = await response.json();
-    return data[periode][nummer];
+    console.log("data: ", data);
+    console.log("periode: ", periode);
+    console.log("nummer: ", nummer);
+    console.log("data[periode]: ", data[periode]);
+    console.log("data[periode][nummer]: ", data[periode][String(nummer)]);
+    return data[String(periode)][String(nummer)];
 }
 
 /**
@@ -120,13 +125,12 @@ function getHint(_hint) {
     return icon;
 }
 
-/**
- * Loads words from a JSON file and displays them in a table.
- * @param {number} nummer - The index of the words to load.
- */
-async function loadWoorden(periode, nummer) {
-    $('tbody').html('');
-    $("#woorden-content").html('');
+async function fetchAndCreateWoordenschatElement(periode, nummer) {
+    // Create a new table and tbody element
+    const container = $('<div>').addClass('box-container');
+    const table = $('<table class="woorden-table"></table>');
+    const tbody = $('<tbody></tbody>');
+    container.html('');
 
     const woorden = await getWoorden(periode, nummer);
 
@@ -136,16 +140,22 @@ async function loadWoorden(periode, nummer) {
     for (const key of keys) {
         let value = woorden[key];
         rows.push(key);
-        let trow = $(`<tr>`);
-        let tdata = $(`<td>`);
+        let trow = $(`<tr></tr>`);
+        let tdata = $(`<td></td>`);
         const _inp = $(`<input type="text" value="" data-name="${key}">`);
         tdata.append(_inp);
         tdata.append(getHint(key));
         trow.append(tdata);
         trow.append(`<td>${toTitleCase(value, true)}</td>`);
-        trow.append(`</tr>`);
-        $('tbody').append(trow);
+        tbody.append(trow);
     }
+
+    // Append tbody to table
+    table.append(tbody);
+
+    // Update the container with the table
+    container.html(table);
+
     let shuffledWords = Array.from(new Set(rows)).sort(() => Math.random() - 0.5);
     let formattedRows = [];
     let row = [];
@@ -186,116 +196,10 @@ async function loadWoorden(periode, nummer) {
             updateWoordsList(ID, false, false, true);
         }
     });
-    const periodeKiezer = $('.periode-kiezer select');
-    const toetsenKiezer = $('.toets-kiezer select');
-
-    periodeKiezer.val(periode);
-    toetsenKiezer.val(nummer);
+    container.append(table);
+    console.log("container: ", container);
+    return container;
 }
 
-async function handlePeriode() {
-    const periodeKiezer = $('.periode-kiezer select');
-    const periodes = Object.keys(await (await fetch('woorden.json')).json());
 
-    const selectedPeriode = localStorage.getItem('selectedPeriode');
-
-    periodes.forEach((periode) => {
-        let option = $(`<option value="${periode}">Periode ${periode}</option>`);
-        if (selectedPeriode && selectedPeriode === periode) {
-            option.attr('selected', 'selected');
-        }
-        periodeKiezer.append(option);
-    });
-
-    periodeKiezer.on('change', function () {
-        let nummer = $(this).val();
-        if (!nummer) {
-            return;
-        }
-        localStorage.setItem('selectedPeriode', nummer);
-        localStorage.setItem('selectedToets', 1);
-        const selectedToets = localStorage.getItem('selectedToets');
-
-        loadWoorden(nummer, selectedToets);
-    });
-
-    handleToetsen(selectedPeriode);
-}
-
-/**
- * Handles the selection of tests and loads the corresponding words.
- */
-async function handleToetsen(periode) {
-    const toetsenKiezer = $('.toets-kiezer select');
-    toetsenKiezer.empty();
-    const toetsen = (await (await fetch('woorden.json')).json())[periode];
-
-    const selectedToets = localStorage.getItem('selectedToets');
-
-    Object.keys(toetsen).forEach((toets) => {
-        let option = $(`<option value="${toets}">Toets ${toets}</option>`);
-        if (selectedToets && selectedToets === toets) {
-            option.attr('selected', 'selected');
-        }
-        toetsenKiezer.append(option);
-    });
-
-    toetsenKiezer.on('change', function () {
-        let nummer = $(this).val();
-        if (!nummer) {
-            return;
-        }
-        selectedPeriode = localStorage.getItem('selectedPeriode');
-        localStorage.setItem('selectedToets', nummer);
-        loadWoorden(selectedPeriode, nummer);
-    });
-}
-
-/**
- * Initializes the application by handling test selection and loading words.
- */
-jQuery(function () {
-    const selectedPeriode = localStorage.getItem('selectedPeriode');
-    const selectedToets = localStorage.getItem('selectedToets');
-    if (!selectedPeriode) {
-        localStorage.setItem('selectedPeriode', 3);
-    };
-    if (!selectedToets) {
-        localStorage.setItem('selectedToets', 1);
-    };
-    handlePeriode();
-    loadWoorden(selectedPeriode, selectedToets,);
-});
-
-//
-//$(document).ready(function () {
-//    const $woorden = $('.woorden');
-//    let isMoving = false;
-//    let offsetX = 0;
-//    let offsetY = 0;
-//
-//    $woorden.css('position', 'absolute');
-//
-//    $woorden.on('mousedown', function (e) {
-//        isMoving = true;
-//        offsetX = e.clientX - $woorden.offset().left;
-//        offsetY = e.clientY - $woorden.offset().top;
-//        $(document).on('mousemove', onMouseMove);
-//        $(document).on('mouseup', onMouseUp);
-//    });
-//
-//    function onMouseMove(e) {
-//        if (isMoving) {
-//            $woorden.css({
-//                left: (e.clientX - offsetX) + 'px',
-//                top: (e.clientY - offsetY) + 'px'
-//            });
-//        }
-//    }
-//
-//    function onMouseUp() {
-//        isMoving = false;
-//        $(document).off('mousemove', onMouseMove);
-//        $(document).off('mouseup', onMouseUp);
-//    }
-//});
+export { fetchAndCreateWoordenschatElement };
