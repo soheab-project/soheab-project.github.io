@@ -5,192 +5,178 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nederlands Toets Oefener</title>
-    <script>
-        let darkModeSetting = localStorage.getItem('darkMode');
-        if (darkModeSetting === null) {
-            darkModeSetting = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            localStorage.setItem('darkMode', darkModeSetting);
-        } else {
-            darkModeSetting = darkModeSetting === 'true';
-        }
-
-        if (darkModeSetting) {
-            document.documentElement.classList.add('dark-mode');
-        } else {
-            document.documentElement.classList.remove('dark-mode');
-        }
-    </script>
     <link rel="stylesheet" href="styles/style.css">
+    <script>
+        (function () {
+            const root = document.documentElement;
+            const darkModeSetting = localStorage.getItem('darkMode') === 'true' ||
+                (localStorage.getItem('darkMode') === null && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+            if (darkModeSetting) root.classList.add('dark-mode');
+
+            const accentColor = localStorage.getItem('accentColor');
+            if (accentColor) {
+                root.style.setProperty('--primary-color', accentColor);
+                root.style.setProperty('--accent-color', accentColor);
+                root.style.setProperty('--gradient-primary', `linear-gradient(45deg, ${accentColor}, #ffffff)`);
+                root.style.setProperty('--gradient-secondary', `linear-gradient(45deg, ${accentColor}, #000000)`);
+                root.style.setProperty('--box-shadow-color', `${accentColor}80`);
+                root.style.setProperty('--border-color', accentColor);
+
+                if (root.classList.contains('dark-mode')) {
+                    root.style.setProperty('--gradient-primary', `linear-gradient(45deg, ${accentColor}, #121212)`);
+                    root.style.setProperty('--gradient-secondary', `linear-gradient(45deg, ${accentColor}, #1e1e1e)`);
+                }
+            }
+        })();
+    </script>
 </head>
 
 <body>
-    <div>
-        <label for="accentColorPicker">Kies een accentkleur:</label>
-        <input type="color" id="accentColorPicker" name="accentColorPicker" value="#ff0000">
-        <button id="resetAccentColor">Reset naar standaard</button>
-    </div>
-
     <header>
-        <button id="darkModeToggle" aria-label="Toggle dark mode">🌙 Donker Theme</button>
+        <button id="darkModeToggle" aria-label="Toggle dark mode">🌙 Donker Thema</button>
         <h1>Nederlands Toets Oefener</h1>
     </header>
 
     <main id="content" class="box-container">
+        <div>
+            <label for="accentColorPicker">Kies een accentkleur:</label>
+            <input type="color" id="accentColorPicker" name="accentColorPicker" value="#000000">
+            <button id="resetAccentColor" type="button">Reset naar standaard</button>
+        </div>
+
         <h2>Voor welke periode?</h2>
-        <select id="periodeKiezer">
-        </select>
+        <select id="periodeKiezer"></select>
 
         <h2>Welke toets?</h2>
-        <select id="toetsKiezer">
-        </select>
+        <select id="toetsKiezer"></select>
     </main>
-
-
-
-    <script type="module">
-        import { genereerPeriodeKiezerOptions, genereerToetsKiezerOptions, genereerOefening } from './scripts/utils.js';
-
-        // DOM Elements
-        const darkModeToggle = document.getElementById('darkModeToggle');
-        const root = document.documentElement;
-        const periodeKiezerElement = document.getElementById('periodeKiezer');
-        const toetsKiezerElement = document.getElementById('toetsKiezer');
-
-        // Dark Mode Handler
-        function applyDarkMode(isDark) {
-            const icon = isDark ? '☀️ Licht Thema' : '🌙 Donker Thema';
-
-            darkModeToggle.textContent = icon;
-
-            if (isDark) {
-                root.classList.add('dark-mode');
-            } else {
-                root.classList.remove('dark-mode');
-            }
-        }
-
-        function toggleDarkMode() {
-            const isDark = root.classList.toggle('dark-mode');
-            localStorage.setItem('darkMode', isDark);
-            applyDarkMode(isDark);
-        }
-
-        // Event Listener
-        darkModeToggle.addEventListener('click', toggleDarkMode);
-
-        async function initializeDropdowns() {
-            const periodeFiles = ["../woordenschat.json", "../beeldtaal.json"]; // Example file paths
-            const periodeSelect = $('#periodeKiezer');
-            const toetsSelect = $('#toetsKiezer');
-
-            function getStoredValue(key) {
-                return localStorage.getItem(key);
-            }
-
-            let storedPeriode = getStoredValue('selectedPeriode');
-            let storedToets = getStoredValue('selectedToets');
-
-            const updateOptions = (selectElement, options) => {
-                selectElement.empty();
-                options.forEach(option => {
-                    const optionElement = new Option(option.text, option.value);
-                    selectElement.append(optionElement);
-                });
-            }
-
-            const updateToetsOptions = async (periode) => {
-                console.log("updateOptions", periode);
-                const toetsKiezerOptions = await genereerToetsKiezerOptions(periode);
-                updateOptions(toetsSelect, toetsKiezerOptions);
-                console.log("toetsKiezerOptions", toetsKiezerOptions);
-                return toetsKiezerOptions[0];
-            };
-
-            const periodeKiezerOptions = await genereerPeriodeKiezerOptions(periodeFiles);
-            updateOptions(periodeSelect, periodeKiezerOptions);
-
-            const toetsOptions = await genereerToetsKiezerOptions(storedPeriode || 3);
-            updateOptions(toetsSelect, toetsOptions);
-            console.log("storedPeriode", storedPeriode);
-            console.log("storedToets", storedToets);
-            if (storedPeriode) {
-                periodeSelect.val(storedPeriode);
-            }
-            if (storedToets) {
-                toetsSelect.val(storedToets);
-            }
-
-
-            periodeSelect.on('change', async () => {
-                const selectedPeriode = periodeSelect.val();
-                console.log("selectedPeriode", selectedPeriode);
-                storedPeriode = selectedPeriode;
-                localStorage.setItem('selectedPeriode', selectedPeriode);
-                localStorage.removeItem('selectedToets');
-                const firstOption = await updateToetsOptions(selectedPeriode);
-                console.log("firstOption", firstOption);
-                toetsSelect.val(firstOption.value);
-                await genereerOefening(selectedPeriode, toetsSelect.val());
-            });
-
-            toetsSelect.on('change', async () => {
-                const selectedToets = toetsSelect.val();
-                localStorage.setItem('selectedToets', selectedToets);
-                await genereerOefening(storedPeriode, selectedToets);
-            });
-
-            await genereerOefening(periodeSelect.val(), toetsSelect.val());
-        }
-
-        await initializeDropdowns();
-    </script>
-
-    <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
-        integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
-
-    <script>
-        $(document).ready(function () {
-            const $accentColorPicker = $('#accentColorPicker');
-            const $resetAccentColorButton = $('#resetAccentColor');
-            const rootStyles = document.documentElement;
-            const defaultColor = getComputedStyle(rootStyles).getPropertyValue('--primary-color').trim() || '#ff0000';
-
-            function resetAccentColors() {
-                rootStyles.style.setProperty('--primary-color', defaultColor);
-                rootStyles.style.setProperty('--accent-color', defaultColor);
-                rootStyles.style.setProperty('--list-item-counter-color', defaultColor);
-                localStorage.removeItem('accentColor');
-                $accentColorPicker.val(defaultColor);
-            }
-
-            function applyAccentColor(color) {
-                rootStyles.style.setProperty('--primary-color', color);
-                rootStyles.style.setProperty('--accent-color', color);
-                rootStyles.style.setProperty('--list-item-counter-color', color);
-            }
-
-            $accentColorPicker.on('input', function () {
-                const color = $(this).val();
-                localStorage.setItem('accentColor', color);
-                applyAccentColor(color);
-            });
-
-            $resetAccentColorButton.on('click', resetAccentColors);
-
-            const storedAccentColor = localStorage.getItem('accentColor');
-            if (storedAccentColor) {
-                $accentColorPicker.val(storedAccentColor);
-                applyAccentColor(storedAccentColor);
-            } else {
-                applyAccentColor(defaultColor);
-            }
-        });
-    </script>
-    <script type="module" src="scripts/utils.js"></script>
 
     <footer>
         <p>&copy; 2024-2025 Soheab</p>
     </footer>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
+        integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
+    <script type="module" src="scripts/utils.js"></script>
+    <script type="module">
+        import { genereerPeriodeKiezerOptions, genereerToetsKiezerOptions, genereerOefening } from './scripts/utils.js';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const root = document.documentElement;
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const accentColorPicker = document.getElementById('accentColorPicker');
+            const resetAccentColorButton = document.getElementById('resetAccentColor');
+            const periodeKiezerElement = document.getElementById('periodeKiezer');
+            const toetsKiezerElement = document.getElementById('toetsKiezer');
+
+            const applyDarkMode = (isDark) => {
+                root.classList.toggle('dark-mode', isDark);
+                darkModeToggle.textContent = isDark ? '☀️ Licht Thema' : '🌙 Donker Thema';
+                localStorage.setItem('darkMode', isDark);
+            };
+
+
+            const applyAccentColor = (color) => {
+                if (color) {
+                    // Set the user's accent color as a CSS variable
+                    root.style.setProperty('--accent-color', color);
+
+                    // Add the accent override class
+                    document.body.classList.add('accent-override');
+                } else {
+                    // Reset to default colors
+                    resetAccentColors();
+                }
+                // Save the accent color to localStorage
+                localStorage.setItem('accentColor', color || '');
+                accentColorPicker.value = color || '#000000';
+            };
+
+            const resetAccentColors = () => {
+                root.style.removeProperty('--accent-color');
+                root.style.removeProperty('--primary-color');
+                root.style.removeProperty('--gradient-primary');
+                root.style.removeProperty('--gradient-secondary');
+                root.style.removeProperty('--box-shadow-color');
+                root.style.removeProperty('--border-color');
+
+                // Remove the accent override class
+                document.body.classList.remove('accent-override');
+
+                // Clear the accent color from localStorage
+                localStorage.removeItem('accentColor');
+
+                // Set the color picker to a default value (e.g., black)
+                accentColorPicker.value = getComputedStyle(root).getPropertyValue('--accent-color').trim() || '#000000';
+            };
+
+            const initializeAccentColor = () => {
+                const storedAccentColor = localStorage.getItem('accentColor');
+                if (storedAccentColor) {
+                    applyAccentColor(storedAccentColor);
+                } else {
+                    resetAccentColors();
+                }
+            };
+
+            const initializeDropdowns = async () => {
+                try {
+                    const periodeFiles = ["../woordenschat.json", "../beeldtaal.json"];
+                    const storedPeriode = localStorage.getItem('selectedPeriode');
+                    const storedToets = localStorage.getItem('selectedToets');
+
+                    const updateOptions = (selectElement, options) => {
+                        selectElement.innerHTML = '';
+                        options.forEach(option => {
+                            const optionElement = new Option(option.text, option.value);
+                            selectElement.append(optionElement);
+                        });
+                    };
+
+                    const periodeKiezerOptions = await genereerPeriodeKiezerOptions(periodeFiles);
+                    updateOptions(periodeKiezerElement, periodeKiezerOptions);
+
+                    const toetsKiezerOptions = await genereerToetsKiezerOptions(storedPeriode || 3);
+                    updateOptions(toetsKiezerElement, toetsKiezerOptions);
+
+                    if (storedPeriode) periodeKiezerElement.value = storedPeriode;
+                    if (storedToets) toetsKiezerElement.value = storedToets;
+
+                    periodeKiezerElement.addEventListener('change', async () => {
+                        const selectedPeriode = periodeKiezerElement.value;
+                        localStorage.setItem('selectedPeriode', selectedPeriode);
+                        const toetsOptions = await genereerToetsKiezerOptions(selectedPeriode);
+                        updateOptions(toetsKiezerElement, toetsOptions);
+                        await genereerOefening(selectedPeriode, toetsKiezerElement.value);
+                    });
+
+                    toetsKiezerElement.addEventListener('change', async () => {
+                        const selectedToets = toetsKiezerElement.value;
+                        localStorage.setItem('selectedToets', selectedToets);
+                        await genereerOefening(periodeKiezerElement.value, selectedToets);
+                    });
+
+                    await genereerOefening(periodeKiezerElement.value, toetsKiezerElement.value);
+                } catch (error) {
+                    console.error('Error initializing dropdowns:', error);
+                }
+            };
+
+            // Initialize features
+            initializeAccentColor();
+            initializeDropdowns();
+
+            // Event listeners
+            darkModeToggle.addEventListener('click', () => {
+                const isDark = root.classList.toggle('dark-mode');
+                applyDarkMode(isDark);
+            });
+
+            accentColorPicker.addEventListener('input', (e) => applyAccentColor(e.target.value));
+            resetAccentColorButton.addEventListener('click', resetAccentColors);
+        });
+    </script>
 </body>
 
 </html>

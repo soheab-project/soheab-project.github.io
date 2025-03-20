@@ -20,40 +20,7 @@
     --gradient-end: #1a1a2a;
 }
 
-button#darkModeToggle {
-    background: linear-gradient(135deg, rgba(163, 196, 243, 0.95), rgba(196, 163, 243, 0.95));
-    color: white;
-    border: none;
-    padding: 12px 32px;
-    border-radius: 20px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 4px 25px rgba(163, 196, 243, 0.3);
-    transition: all 0.3s ease-in-out;
-    z-index: 1000;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-:root.dark-mode button#darkModeToggle {
-    background: linear-gradient(135deg, rgba(179, 209, 250, 0.2), rgba(209, 179, 250, 0.2));
-    color: #b3d1fa;
-    border: 1px solid rgba(179, 209, 250, 0.3);
-    box-shadow: 0 4px 25px rgba(179, 209, 250, 0.2);
-}
-
-button#darkModeToggle:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 35px rgba(163, 196, 243, 0.4);
-    background: linear-gradient(135deg, rgba(196, 163, 243, 0.95), rgba(163, 196, 243, 0.95));
-}
-
-:root.dark-mode button#darkModeToggle:hover {
-    background: linear-gradient(135deg, rgba(179, 209, 250, 0.3), rgba(209, 179, 250, 0.3));
-    box-shadow: 0 12px 35px rgba(179, 209, 250, 0.3);
-}
-
+/* Base styles */
 body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     background: linear-gradient(165deg, var(--gradient-start), var(--gradient-end));
@@ -91,6 +58,7 @@ h1::after {
     border-radius: 6px;
 }
 
+/* Box container */
 .box-container {
     background: rgba(255, 255, 255, 0.98);
     padding: 56px;
@@ -110,6 +78,20 @@ h1::after {
     border: 1px solid rgba(179, 209, 250, 0.1);
 }
 
+/* List items */
+ol {
+    list-style: none;
+    counter-reset: list-counter;
+    padding: 0;
+    width: 100%;
+    display: none;
+}
+
+ol.show {
+    display: block;
+    animation: fadeIn 0.8s cubic-bezier(0.25, 0.1, 0.25, 1), slideInFromRight 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
 li {
     margin-bottom: 28px;
     padding: 36px;
@@ -123,60 +105,6 @@ li {
     overflow: hidden;
     width: 100%;
     box-sizing: border-box;
-}
-
-ol {
-    list-style: none;
-    counter-reset: list-counter;
-    padding: 0;
-    width: 100%;
-    display: none;
-}
-
-ol.show {
-    display: block;
-    animation: fadeIn 0.8s cubic-bezier(0.25, 0.1, 0.25, 1), slideInFromRight 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
-    transition: all 0.3s ease-in-out;
-}
-
-li.show {
-    animation: fadeIn 0.8s cubic-bezier(0.25, 0.1, 0.25, 1), slideInFromRight 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
-}
-
-button#darkModeToggle {
-    animation: toggleFadeIn 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes slideInFromRight {
-    from {
-        transform: translateX(100%);
-    }
-
-    to {
-        transform: translateX(0);
-    }
-}
-
-@keyframes toggleFadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.8);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
 }
 
 :root.dark-mode li {
@@ -200,6 +128,7 @@ li::before {
     border-radius: 14px;
 }
 
+/* Title and description */
 .title {
     font-weight: 700;
     color: var(--primary);
@@ -226,19 +155,48 @@ li::before {
     max-width: calc(100% - (1.1rem + 40px));
 }
 
-li.show {
-    animation: fadeIn 0.8s cubic-bezier(0.25, 0.1, 0.25, 1), slideInFromRight 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
-}
-
 .description.show {
     display: block;
     animation: fadeIn 0.8s cubic-bezier(0.25, 0.1, 0.25, 1), slideInFromRight 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
+/* Dark mode toggle button */
 button#darkModeToggle {
+    background: linear-gradient(135deg, rgba(163, 196, 243, 0.95), rgba(196, 163, 243, 0.95));
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 25px rgba(163, 196, 243, 0.3);
+    transition: all 0.3s ease-in-out;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     animation: toggleFadeIn 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
+:root.dark-mode button#darkModeToggle {
+    background: linear-gradient(135deg, rgba(179, 209, 250, 0.2), rgba(209, 179, 250, 0.2));
+    color: #b3d1fa;
+    border: 1px solid rgba(179, 209, 250, 0.3);
+    box-shadow: 0 4px 25px rgba(179, 209, 250, 0.2);
+}
+
+button#darkModeToggle:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px rgba(163, 196, 243, 0.4);
+    background: linear-gradient(135deg, rgba(196, 163, 243, 0.95), rgba(163, 196, 243, 0.95));
+}
+
+:root.dark-mode button#darkModeToggle:hover {
+    background: linear-gradient(135deg, rgba(179, 209, 250, 0.3), rgba(209, 179, 250, 0.3));
+    box-shadow: 0 12px 35px rgba(179, 209, 250, 0.3);
+}
+
+/* Animations */
 @keyframes fadeIn {
     from {
         opacity: 0;
