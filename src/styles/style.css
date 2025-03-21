@@ -190,7 +190,6 @@ header {
 
 footer {
     border-radius: 0 0 var(--border-radius) var(--border-radius);
-    margin-bottom: 20px;
 }
 
 main {
