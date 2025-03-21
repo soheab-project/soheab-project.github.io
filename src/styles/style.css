@@ -8,8 +8,8 @@
     --shadow-color: rgba(0, 0, 0, 0.1);
     --border-radius: 8px;
     --font-family: 'Poppins', sans-serif;
-    --gradient-primary: linear-gradient(45deg, var(--primary-color), var(--accent-color));
-    --gradient-secondary: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
+    --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+    --gradient-secondary: linear-gradient(135deg, var(--secondary-color) 0%, var(--accent-color) 100%);
     --box-shadow-color: rgba(0, 0, 0, 0.1);
     --border-color: var(--primary-color);
     --button-hover-bg: #cdeaf0;
@@ -51,31 +51,33 @@
     --list-item-hover-bg: #4e4e4e;
     --list-item-text-color: #e0e0e0;
     --list-item-description-color: #b3b3b3;
-    --accent-color: #f7bfa3;
-    --primary-color: #f7bfa3;
+    --accent-color: #ff8c69;
+    --primary-color: #ff7043;
     --secondary-color: #f7d1ba;
-    --header-footer-accent: #f7c8b0;
+    --header-footer-accent: #ff8c69;
     --border-radius: 12px;
     --box-shadow-color: rgba(0, 0, 0, 0.4);
-    --button-hover-bg: #f7c8b0;
-    --button-active-bg: #f7bfa3;
-    --link-color: #f7d1ba;
-    --link-hover-color: #fbe3d6;
-    --input-focus-border: #f7c8b0;
-    --scroll-button-bg: #f7bfa3;
+    --button-hover-bg: #ff8c69;
+    --button-active-bg: #ff7043;
+    --link-color: #ff7043;
+    --link-hover-color: #ffc1a6;
+    --input-focus-border: #ff8c69;
+    --scroll-button-bg: #ff7043;
+    --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+    --gradient-secondary: linear-gradient(135deg, var(--secondary-color) 0%, var(--accent-color) 100%);
 }
 
 .accent-override {
     --primary-color: var(--accent-color);
-    --gradient-primary: linear-gradient(45deg, var(--accent-color), #ffffff);
-    --gradient-secondary: linear-gradient(45deg, var(--accent-color), #000000);
+    --gradient-primary: linear-gradient(135deg, var(--accent-color) 0%, #ffffff 100%);
+    --gradient-secondary: linear-gradient(135deg, var(--accent-color) 0%, #000000 100%);
     --box-shadow-color: rgba(var(--accent-color-rgb), 0.6);
     --border-color: var(--accent-color);
 }
 
 .accent-override.dark-mode {
-    --gradient-primary: linear-gradient(45deg, var(--accent-color), #2e2e2e);
-    --gradient-secondary: linear-gradient(45deg, var(--accent-color), #3e3e3e);
+    --gradient-primary: linear-gradient(135deg, var(--accent-color) 0%, #2e2e2e 100%);
+    --gradient-secondary: linear-gradient(135deg, var(--accent-color) 0%, #3e3e3e 100%);
 }
 
 header,
@@ -168,7 +170,7 @@ footer,
 
 header,
 footer {
-    background-color: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
     color: var(--surface-color);
     display: flex;
     flex-direction: column;
